@@ -1,0 +1,110 @@
+CRM 项目
+     && crm的技术架构——通过spring整合（单例模式）
+            1.视图层（view）：展示数据 和用户交互
+                html css（修饰页面） JavaScript（用户交互） 较为繁琐
+                使用框架代替 jQuery （优化js 封装js）
+                bootstrap（相当于spring综合三层的作用综合 html css js）
+                ext | easyUI Vue jsp也算是网页技术
+            2.控制层（controller）： 控制业务处理流程（接收请求 处理参数 根据不同的业务调用业务层 响应信息）
+                servlet springmvc (webWork ,struts1 ,struts2) 依赖注入 核心控制器
+            3.业务层（service）： 处理业务逻辑
+               （ioc（控制反转） Aop（面向切面编程 处理事务）） （JBPM activiti）
+            4.持久层（dao、mapper）：
+                jdbc mybatis（专注于sql语句的处理） （hibernate 比mybatis封装还彻底 不灵活也不易优化耦合度高）
+                ibatis
+        整合    spring 维护类资源 维护数据库资源
+                spring - ioc -aop （ejb  封装太好了 不灵活）
+
+     &&& 综合运用
+        对软件开发有一定的了解
+        crm核心业务
+
+     &&&& 软件开发声明周期
+        软件企业的组织结构 ：
+            研发部 （程序员 美工 DBA-数据库管理员） 测试部  产品部 实施部 运维部 市场部
+
+        1) 招标  投标 标书
+           甲方  乙方
+        2) 可行性分析 --- 可行性分析报告
+              技术方面
+              经济方面
+            做不了--》外包
+        3) 需求分析 --- 需求文档
+                产品经理  需求调研
+                项目原型 容易确定需求
+        4) 分析与设计：
+            架构设计 物理架构设计
+                        应用服务器 tomcat webLogic websphere Jboss 服务器
+                        javaee：十三种协议 servlet jsp xml jdbc bean
+                        数据库服务器 mysql（比较小巧） Oracle DB2 sqlServer 达梦
+                    逻辑架构设计
+                        代码分层
+                            视图层 -- 控制层 -- 业务层 -- 持久层 == 数据库
+                      技术类型  java .net
+            项目设计：
+                    物理模型设计： 设计表 表和表之间的关系 表中的字段和字段类型和长度
+                    逻辑模型设计： 实现功能需要那些类和属性和方法的参数和返回值 以及类和类之间的关系
+                                    rational rose
+                    界面设计：企业级应用   项目原型
+                             互联网应用
+                    算法设计：互联网应用体现明显  算法设计文档
+
+        5) 搭建开发环境：
+                    创建项目 添加依赖 配置文件 静态页面添加公共类以及其他资源 能够正常启动运行
+        6) 编码实现 注释文档
+
+        7) 测试  -- 测试用例
+        8) 试运营
+        9) 上线
+        10) 运维
+        11) 每个阶段  文档
+
+     &&&&& crm 项目的核心业务
+        1) CRM项目的简介customer relationship management 客户关系管理系统
+             企业级应用 传统应用  面向对象：销售型公司 贸易公司
+             项目宗旨 增加新用户 留住老客户 把已有客户转化为持久客户
+        2) CRM是一类项目
+
+        3) 系统管理功能
+                用户登录 企业内部 安全退出
+        4) 处理业务数据
+                市场活动  市场部
+                线索 销售
+                客户和联系人
+                交易
+                售后 主动提醒 ： 前台请求 后台才能响应   （请求驱动）  http 协议
+                统计图表 如何做报表
+     &&&&&&物理模型设计
+        1).表结构
+                系统管理表：
+                        tbl_user             使用者
+                        tbl_dic_type         数据字典类型
+                        tbl_dic_value        数据字典值
+                业务表
+                        tbl_activity         市场活动表
+                        tbl_activity_remark  市场活动备注表
+
+                        tbl_clue             线索表
+                        tbl_clue_remark      线索备注表
+
+                        tbl_customer         客户表
+                        tbl_customer_remark  客户备注表
+
+                        tbl_contacts         联系人表
+                        tbl_contacts_remark  联系人备注表
+
+                        tbl_tran             交易表
+                        tbl_tran_remark      交易备注表
+                        tbl_tran_history     交易历史表
+
+                        tbl_task             任务表
+                表中的字段 主键字段 推荐使用没有业务含义的字段作为主键 字段的类型和长度 varchar
+                主键值的生成方式l:
+                    1）自增 借助数据库 数值 （效率低） 并发的情况下 会采用锁机制{单例}
+                    2）assighed程序员自己声明  按照一个算法生成 唯一不为空（hi/low UUID）
+
+
+
+
+
+
