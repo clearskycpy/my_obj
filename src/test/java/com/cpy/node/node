@@ -102,7 +102,17 @@ CRM 项目
                 主键值的生成方式l:
                     1）自增 借助数据库 数值 （效率低） 并发的情况下 会采用锁机制{单例}
                     2）assighed程序员自己声明  按照一个算法生成 唯一不为空（hi/low UUID）
-                    3）共享主键 两张表的主键共享
+                    3）共享主键 两张表的主键共享 耦合度太高了 不推荐
+
+                外键字段
+                    1）外键用来确定表和表之间的关系
+                    2）一对多
+                    先删除字表记录
+                    select id ,name
+                    from tbl_student s join tbl_course scr on s.is = scr.id where s.name like '__zhang%'
+                     多对一 多对多
+                    3）
+
 
 
 
