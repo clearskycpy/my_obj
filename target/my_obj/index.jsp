@@ -17,6 +17,9 @@
 </head>
 
 <body>
+<a href="${pageContext.request.contextPath}/index1.do">login</a>
+<br>
+<br>
 <div class="header w">
     <div class="log"><img src="image/logo.docx.png" alt=""></div>
     <div class="nav">
