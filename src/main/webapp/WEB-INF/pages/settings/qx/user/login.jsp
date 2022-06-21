@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
 	String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/";
 %>
@@ -11,6 +12,14 @@
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 	$(function () {
+		// 给整个窗口加上键盘按下的事件
+		$(window).keydown(function (e){
+			// js  如果按的是回车键 提交登录请求
+			if(e.keyCode == 13){
+				// 发送请求
+				$("#loginBtn").click();
+			}
+		});
 		// 给登录按钮添加单击事件
 		$("#loginBtn").click(function () {
 		//	收集参数
@@ -26,25 +35,34 @@
 				alert("密码不能为空");
 				return;
 			}
+			// 显示正在验证
+
 		//	发送请求
 			$.ajax({
-				url:'/crm/settings/qx/user/login.do',
-				data:{
-					loginAct:loginAct,
-					loginPwd:loginPwd,
-					idRemPwd:idRemPwd
+				// 这里是单独拼接 没有用到页面上定义的basePath 所以需要加上 crm
+				url: '/crm/settings/qx/user/login.do',
+				data: {
+					loginAct: loginAct,
+					loginPwd: loginPwd,
+					idRemPwd: idRemPwd
 				},
-				type:'POST',
-				dataType:'json',
-				success:function (data){
-					if(data.code == '1'){
+				type: 'POST',
+				dataType: 'json',
+				success: function (data) {
+					if (data.code == '1') {
 						// 跳转业务主页面  不能直接跳转
-						window.location.href="crm/workbench/index.do"; //
-					}else {
-						$("msg").text(data.message);
+						window.location.href = "workbench/index.do"; //
+					} else {
+						$("#msg").html(data.message);
 					}
+				},
+				beforeSend:function () {
+					// 在ajax发送请求之前会执行这个函数 如果发送了请求就返回true 没发送就返回false
+					$("#msg").html("验证...");
+					return true;
 				}
 			});
+
 		});
 	});
 </script>
@@ -65,20 +83,26 @@
 			<form action="workbench/index.html" class="form-horizontal" role="form">
 				<div class="form-group form-group-lg">
 					<div style="width: 350px;">
-						<input class="form-control" id="loginAct" type="text" placeholder="用户名">
+						<input class="form-control" id="loginAct" type="text" value="${cookie.loginAct.value}" placeholder="用户名">
 					</div>
 					<div style="width: 350px; position: relative;top: 20px;">
-						<input class="form-control" id="loginPwd" type="password" placeholder="密码">
+						<input class="form-control" id="loginPwd" type="password" value="${cookie.loginPwd.value}" placeholder="密码">
 					</div>
 					<div class="checkbox"  style="position: relative;top: 30px; left: 10px;">
 						<label>
-							<input type="checkbox" id="idRemPwd"> 十天内免登录
+							<c:if test="${not empty cookie.loginAct and not empty cookie.loginPwd}">
+								<input type="checkbox" id="idRemPwd" checked>
+							</c:if>
+							<c:if test="${empty cookie.loginAct and empty cookie.loginPwd}">
+								<input type="checkbox" id="idRemPwd">
+							</c:if>
+							 十天内免登录
 						</label>
 						&nbsp;&nbsp;
-						<span id="msg"></span>
+						<span id="msg" style="border: 1px solid pink;"></span>
 					</div>
 <%--					改变成button 可以发送异步请求 如果 密码错误当前页面不发生变化--%>
-					<button type="button" id="loginBtn" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
+					<button type="button" id="loginBtn" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;color: pink">登录</button>
 				</div>
 			</form>
 		</div>

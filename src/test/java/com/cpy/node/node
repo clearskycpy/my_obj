@@ -150,6 +150,17 @@ CRM 项目
         c)  配置数据源
         d） 生成代码保存的目录  表的信息
         e) 运行 mybatis逆向工程
+        @Test
+            public void TestLogin(){
+        //        在实现userController中的login方法的时候由于在 if (nowTime.compareTo(user.getExpireTime())>0){
+        ////                过期了 登录失败
+        //                returnObject.setCode("0");
+        //                returnObject.setMessage("用户已经过期");
+        //        调用方法的时候出现了错误 导致  compareTo对象是null
+        //        测试如果是null会不会出异常
+                "bbbc".compareTo("hhh");
+                System.out.println("end"); // 出现了空指针异常  java.lang.NullPointerException
+            }
 
 
 

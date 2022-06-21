@@ -34,6 +34,19 @@ http://www.springframework.org/schema/util/spring-util.xsd">
         <property name="prefix" value="/WEB-INF/pages/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+<!--    配置拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+<!--            拦截的资源-->
+            <mvc:mapping path="/workbench/**"/>
+            <mvc:mapping path="/settings/**"/>
+<!--            放行的资源-->
+            <mvc:exclude-mapping path="/settings/qx/user/login.do"/>
+            <mvc:exclude-mapping path="/settings/qx/user/toLogin.do"/>
+<!--            拦截器类-->
+            <bean class="com.cpy.settings.web.interceptor.LogInInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
     <!-- 配置文件上传解析器 id:必须是multipartResolver-->
     <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="#{1024*1024*80}"/>
