@@ -2,6 +2,7 @@ package com.cpy.settings.mapper;
 
 import com.cpy.settings.domain.User;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserMapper {
@@ -59,4 +60,10 @@ public interface UserMapper {
      * @return
      */
     User selectUserByLoginActAndPwd(Map<String,Object> map);
+
+    /**
+     * 查询所有用户信息 不包括离职人员的
+     * @return  用户列表
+     */
+    List<User> selectAllUsers();
 }
