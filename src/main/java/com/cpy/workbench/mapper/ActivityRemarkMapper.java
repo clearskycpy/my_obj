@@ -60,5 +60,6 @@ public interface ActivityRemarkMapper {
      * @param activityRemark
      * @return
      */
+
     int insertRemark(ActivityRemark activityRemark);
 }
