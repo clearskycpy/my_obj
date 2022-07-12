@@ -352,12 +352,12 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				dataType : 'json',
 				success : function (data) {
 					if(data.code == "1"){
+						alert(data.message);
 						// 导入成功，关闭模态窗口
 						$("#importActivityModal").modal("hide");
-						alert(data.message);
+						//	刷新页面
 						queryActivityByConditionForPage($("#demo_pag1").bs_pagination('getOption','currentPage'),$("#demo_pag1").bs_pagination('getOption','rowsPerPage'));
 						return;
-						//	刷新页面
 
 					}else {
 						alert(data.message);
@@ -366,7 +366,6 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					}
 				}
 			});
-
 		});
 
 	});
@@ -399,7 +398,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				$.each(data.activityList,function (index,obj){
 					htmlStr += "<tr class=\"active\">";
 					htmlStr += "<td><input type=\"checkbox\" value='"+obj.id+"'/></td>";
-					htmlStr += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='detail.html';\">"+obj.name+"</a></td>";
+					htmlStr += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='detail.jsp';\">"+obj.name+"</a></td>";
 					htmlStr += "<td>"+obj.owner+"</td>";
 					htmlStr += "<td>"+obj.startDate+"</td>";
 					htmlStr += "<td>"+obj.endDate+"</td>";
@@ -676,14 +675,14 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					<tbody id="tB">
 						<%--<tr class="active">
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
                             <td>zhangsan</td>
 							<td>2020-10-10</td>
 							<td>2020-10-20</td>
 						</tr>
                         <tr class="active">
                             <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
+                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
                             <td>zhangsan</td>
                             <td>2020-10-10</td>
                             <td>2020-10-20</td>

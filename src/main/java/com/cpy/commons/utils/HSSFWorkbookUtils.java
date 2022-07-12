@@ -86,7 +86,6 @@ public class HSSFWorkbookUtils {
                 list.add(activity);
             }
 
-
         return list;
     }
 }

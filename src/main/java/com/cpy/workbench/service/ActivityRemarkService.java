@@ -11,4 +11,6 @@ public interface ActivityRemarkService {
      * @return
      */
     List<ActivityRemark> queryActivityRemarkForDetailById(String activityId);
+
+    int insertActivityRemark(ActivityRemark activityRemark);
 }
