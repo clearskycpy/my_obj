@@ -11,4 +11,8 @@ public class Contants {
 
 //    user 信息常量
     public static final String SESSION_USER = "sessionUser";
+
+//    备注的修改标记
+    public static final String EDIT_FLAG_TRUE = "1";
+    public static final String EDIT_FLAG_FALSE = "0";
 }

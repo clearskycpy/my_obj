@@ -398,7 +398,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				$.each(data.activityList,function (index,obj){
 					htmlStr += "<tr class=\"active\">";
 					htmlStr += "<td><input type=\"checkbox\" value='"+obj.id+"'/></td>";
-					htmlStr += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='detail.jsp';\">"+obj.name+"</a></td>";
+					htmlStr += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='workbench/activity/detailActivity.do?id="+obj.id+"';\">"+obj.name+"</a></td>";
 					htmlStr += "<td>"+obj.owner+"</td>";
 					htmlStr += "<td>"+obj.startDate+"</td>";
 					htmlStr += "<td>"+obj.endDate+"</td>";
@@ -672,22 +672,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							<td>结束日期</td>
 						</tr>
 					</thead>
-					<tbody id="tB">
-						<%--<tr class="active">
-							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
-                            <td>zhangsan</td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-						</tr>
-                        <tr class="active">
-                            <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
-                            <td>zhangsan</td>
-                            <td>2020-10-10</td>
-                            <td>2020-10-20</td>
-                        </tr>--%>
-					</tbody>
+					<tbody id="tB"></tbody>
 				</table>
 				<div id="demo_pag1"></div>
 			</div>

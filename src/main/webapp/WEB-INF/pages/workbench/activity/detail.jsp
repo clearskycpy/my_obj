@@ -36,21 +36,153 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			cancelAndSaveBtnDefault = true;
 		});
 		
-		$(".remarkDiv").mouseover(function(){
+		/*$(".remarkDiv").mouseover(function(){
+			$(this).children("div").children("div").show();
+		});*/
+		$("#remarkDivList").on("mouseover",".remarkDiv",function () {
 			$(this).children("div").children("div").show();
 		});
 		
-		$(".remarkDiv").mouseout(function(){
+		/*$(".remarkDiv").mouseout(function(){
+			$(this).children("div").children("div").hide();
+		});*/
+		$("#remarkDivList").on("mouseout",".remarkDiv",function () {
 			$(this).children("div").children("div").hide();
 		});
 		
-		$(".myHref").mouseover(function(){
+		/*$(".myHref").mouseover(function(){
+			$(this).children("span").css("color","red");
+		});*/
+		$("#remarkDivList").on("mouseover",".myHref",function () {
 			$(this).children("span").css("color","red");
 		});
 		
-		$(".myHref").mouseout(function(){
+		/*$(".myHref").mouseout(function(){
+			$(this).children("span").css("color","#E6E6E6");
+		});*/
+		$("#remarkDivList").on("mouseout",".myHref",function () {
 			$(this).children("span").css("color","#E6E6E6");
 		});
+
+
+		$("#saveCreateActivityRemark").click(function () {
+			//收集参数
+			var noteContent = $.trim($("#remark").val());
+			//表单验证
+			var activityId = '${activity.id}';
+			if (noteContent == ""){
+				alert("数据不能为空");
+				return;
+			}
+			$.ajax({
+				url : 'workbench/activity/saveActivityRemark.do',
+				data : {
+					activityId : activityId,
+					noteContent : noteContent
+				},
+				type : 'post',
+				dataType : 'json',
+				success : function (data) {
+					if(data.code == "1"){
+						// alert(data.message);
+						$("#remark").val("");
+						// 导入成功，关闭模态窗口
+						//	刷新页面
+						var htmlStr = "";
+						htmlStr += "<div id=\"div_"+data.retData.id+"\" class=\"remarkDiv\" style=\"height: 60px;\">";
+						htmlStr += "<img title=\"${sessionScope.sessionUser.name}\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+						htmlStr += "<div style=\"position: relative; top: -40px; left: 40px;\" >";
+						htmlStr += "<h5 id=\"h5_"+data.retData.id+"\">"+data.retData.noteContent +"</h5>";
+						htmlStr += "<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font> <b>${activity.name}</b> <small style=\"color: gray;\">"+data.retData.createTime+" 由${sessionScope.sessionUser.name}创建</small>";
+						htmlStr += "<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+						htmlStr += "<a class=\"myHref\" name=\"update\"remarkId=\""+data.retData.id+"\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						htmlStr += "&nbsp;&nbsp;&nbsp;&nbsp;";
+						htmlStr += "<a class=\"myHref\" name=\"delete\"remarkId=\""+data.retData.id+"\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						htmlStr += "</div>";
+						htmlStr += "</div>";
+						htmlStr += "</div>";
+						$("#remarkDiv").before(htmlStr)
+						return;
+					}else {
+						alert(data.message);
+					}
+				}
+			});
+		});
+
+	//	给删除备注按钮添加单机事件
+		$("#remarkDivList").on("click","a[name='delete']",function () {
+			//收集参数
+			var id = $(this).attr("remarkId");
+			// 发送请求
+			$.ajax({
+				url : 'workbench/activity/deleteActivityRemarkById.do',
+				data : {
+					id : id
+				},
+				type : 'post',
+				dataType : 'json',
+				success : function (data) {
+					if(data.code == "1"){
+						// 删除成功
+						//	刷新页面
+						$("#div_"+id).remove();
+					}else {
+						alert(data.message);
+						//	模态窗口不关闭
+					}
+				}
+			});
+		});
+	//	给所有的市场活动备注添加单机事件
+		$("#remarkDivList").on("click","a[name='update']",function () {
+		//	获取id和备注内容
+			var id =$(this).attr("remarkId");
+			var noteContent = $("#div_"+id+" h5").text();
+		//	把值写到修改备注的模态窗口
+			$("#edit-id").val(id);
+			$("#noteContent").val(noteContent);
+		//	弹出模态窗口
+			$("#editRemarkModal").modal("show");
+		});
+
+	//	点击模态窗口的更新按钮
+		$("#updateRemarkBtn").click(function () {
+		//	收集参数
+			var id = $("#edit-id").val();
+			var noteContent = $.trim($("#noteContent").val());
+		//	表单验证
+			if (noteContent == ""){
+				alert("备注为空！");
+				return;
+			}
+
+		//	发送请求
+			$.ajax({
+				url : 'workbench/activity/saveEditActivityRemark.do',
+				data : {
+					noteContent : noteContent,
+					id : id
+				},
+				type : 'post',
+				dataType : 'json',
+				success : function (data) {
+					if(data.code == "1"){
+						// 保存成功，关闭模态窗口
+						$("#editRemarkModal").modal("hide");
+						$("#div_"+data.retData.id+" h5").text(data.retData.noteContent);
+						$("#div_"+data.retData.id+" small").text(" "+data.retData.editTime+" 由${sessionScope.sessionUser.name} 修改");
+						return;
+						//	刷新页面
+					}else {
+						alert(data.message);
+						//	模态窗口不关闭
+						$("#editRemarkModal").modal("show");
+					}
+				}
+			});
+		});
+
 	});
 	
 </script>
@@ -72,6 +204,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal" role="form">
+						<input type="hidden" id="edit-id">
                         <div class="form-group">
                             <label for="noteContent" class="col-sm-2 control-label">内容</label>
                             <div class="col-sm-10" style="width: 81%;">
@@ -133,12 +266,12 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 30px;">
 			<div style="width: 300px; color: gray;">创建者</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${activity.createBy}</b><small style="font-size: 10px; color: gray;">${activity.createTime}</small></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${activity.createBy}   </b><small style="font-size: 10px; color: gray;">${activity.createTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 40px;">
 			<div style="width: 300px; color: gray;">修改者</div>
-			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${activity.editBy}</b><small style="font-size: 10px; color: gray;">${activity.editTime}</small></div>
+			<div style="width: 500px;position: relative; left: 200px; top: -20px;"><b>${activity.editBy}   </b><small style="font-size: 10px; color: gray;">${activity.editTime}</small></div>
 			<div style="height: 1px; width: 550px; background: #D5D5D5; position: relative; top: -20px;"></div>
 		</div>
 		<div style="position: relative; left: 40px; height: 30px; top: 50px;">
@@ -153,22 +286,22 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 	</div>
 	
 	<!-- 备注 -->
-	<div style="position: relative; top: 30px; left: 40px;">
+	<div id="remarkDivList" style="position: relative; top: 30px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
 
 <%--		遍历activityRemarks集合 		--%>
 		<c:forEach items="${activityRemarks}" var="activityRemark">
-			<div class="remarkDiv" style="height: 60px;">
+			<div id="div_${activityRemark.id}" class="remarkDiv" style="height: 60px;">
 				<img title="${activityRemark.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 				<div style="position: relative; top: -40px; left: 40px;" >
 					<h5>${activityRemark.noteContent}</h5>
-					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;">${activityRemark.editFlag=='1'?activityRemark.editTime:activityRemark.createTime} 由${activityRemark.editFlag=='1'?activityRemark.editBy:activityRemark.createBy}${activityRemark.editFlag=='1'?'创建':'修改'}</small>
+					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;">${activityRemark.editFlag=='1'?activityRemark.editTime:activityRemark.createTime} 由${activityRemark.editFlag=='1'?activityRemark.editBy:activityRemark.createBy}${activityRemark.editFlag=='1'?'修改':'创建'}</small>
 					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-						<a class="myHref" remarkId="${activityRemark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						<a class="myHref" name="update" remarkId="${activityRemark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
 						&nbsp;&nbsp;&nbsp;&nbsp;
-						<a class="myHref" remarkId="${activityRemark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						<a class="myHref" name="delete" remarkId="${activityRemark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
 					</div>
 				</div>
 			</div>
@@ -180,7 +313,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				<textarea id="remark" class="form-control" style="width: 850px; resize : none;" rows="2"  placeholder="添加备注..."></textarea>
 				<p id="cancelAndSaveBtn" style="position: relative;left: 737px; top: 10px; display: none;">
 					<button id="cancelBtn" type="button" class="btn btn-default">取消</button>
-					<button type="button" class="btn btn-primary">保存</button>
+					<button type="button" class="btn btn-primary" id="saveCreateActivityRemark">保存</button>
 				</p>
 			</form>
 		</div>
