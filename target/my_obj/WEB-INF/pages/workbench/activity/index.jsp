@@ -26,6 +26,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 	$(function(){
 	//	创建按钮添加单击事件
 		$("#createActivity").click(function () {
+			// 清空表单
 			$("#createActivityFrom").get(0).reset();
 
 		//   弹出模态窗口
@@ -478,7 +479,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 						</div>
                         <div class="form-group">
 
-                            <label for="create-cost" class="col-sm-2 control-label">成本</label>
+                            <label for="create-cost" class="col-sm-2 control-label">成本(万元)</label>
                             <div class="col-sm-10" style="width: 300px;">
                                 <input type="text" class="form-control" id="create-cost">
                             </div>
