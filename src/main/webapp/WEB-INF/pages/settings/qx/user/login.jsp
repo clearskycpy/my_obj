@@ -99,10 +99,10 @@
 							 十天内免登录
 						</label>
 						&nbsp;&nbsp;
-						<span id="msg" style="border: 1px solid pink;"></span>
+						<span id="msg"></span>
 					</div>
 <%--					改变成button 可以发送异步请求 如果 密码错误当前页面不发生变化--%>
-					<button type="button" id="loginBtn" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;color: pink">登录</button>
+					<button type="button" id="loginBtn" class="btn btn-primary btn-lg btn-block"  style="width: 350px; position: relative;top: 45px;">登录</button>
 				</div>
 			</form>
 		</div>

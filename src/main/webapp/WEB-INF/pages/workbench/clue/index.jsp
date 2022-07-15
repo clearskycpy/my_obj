@@ -176,8 +176,243 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			todayBtn : true,  // 存在今天选项
 			clearBtn : true  // 存在清空选项
 		});
+		//  给全选按钮添加单击事件
+		$("#cheAll").click(function () {
+			$("#tB input[type='checkbox']").prop("checked",this.checked);
+		});
 
-		//	当市场线索页面加载完成，查询所有数据的第一页以及总记录条数,默认每页显示十条
+		//给变化的元素添加事件，因为这个列表是Ajax 返回过来的所以是变化的
+		$("#tB").on("click","input[type='checkbox']",function () {
+			if($("#tB input[type='checkbox']").size() == $("#tB input[type='checkbox']:checked").size()){
+				$("#cheAll").prop("checked",true);
+			}else {
+				$("#cheAll").prop("checked",false);
+			}
+		});
+
+		// 给删除按钮添加单击事件
+		$("#deleteClueByIds").click(function () {
+			var checkedIds = $("#tB input[type='checkbox']:checked");
+			if (checkedIds.size() == 0 ){
+				alert("还未选择市场活动");
+				return;
+			}
+			if (window.confirm("确定要删除吗？")) {
+				var id = "";
+				$.each(checkedIds,function () {
+					id += "id=" + this.value +"&";
+				});
+				// 去掉最后一个&
+				id = id.substring(0,id.length-1);
+				//	发送请求
+				$.ajax({
+					url : 'workbench/clue/deleteClueByIds.do',
+					data : id,
+					type : 'post',
+					dataType : 'json',
+					success : function (data){
+						if (data.code == "1"){
+							alert(data.message)
+							queryClueByConditionForPage(1,$("#demo_pag1").bs_pagination('getOption','rowsPerPage'));
+						}else {
+							alert(data.message);
+						}
+					}
+				});
+			}
+		});
+
+		// 给修改按钮添加单击事件
+		$("#editClue").click(function () {
+		//	收集参数
+			//	收集参数
+			var checkedIds = $("#tB input[type='checkbox']:checked");
+			if(checkedIds.size() == 0){
+				alert("还未选择");
+				return;
+			}
+			if (checkedIds.size() > 1){
+				alert("不能同时选中多个");
+				return;
+			}
+			// 收集id
+			var id = checkedIds[0].value;
+
+			//	发送请求
+			$.ajax({
+				url : 'workbench/clue/queryClueById.do',
+				data : {
+					id : id
+				},
+				type : 'post',
+				dataType : 'json',
+				success : function (data) {
+
+					// 把信息添加到模态窗口上
+
+					$("#edit-id").val(data.id);
+
+					$("#edit-clueOwner").val(data.owner);
+
+					$("#edit-company").val(data.company);
+
+					$("#edit-call").val(data.appellation);
+
+					$("#edit-surname").val(data.fullname);
+
+					$("#edit-job").val(data.job);
+
+					$("#edit-email").val(data.email);
+
+					$("#edit-phone").val(data.phone);
+
+					$("#edit-website").val(data.website);
+
+					$("#edit-mphone").val(data.mphone);
+
+					$("#edit-status").val(data.state);
+
+					$("#edit-source").val(data.source);
+
+					$("#edit-describe").val(data.description);
+
+					$("#edit-contactSummary").val(data.contactSummary);
+
+					$("#edit-nextContactTime").val(data.nextContactTime);
+
+					$("#edit-address").val(data.address);
+					//	弹出模态窗口
+					$("#editClueModal").modal("show");
+				}
+			});
+		});
+
+		$("#edit-submit").click(function () {
+			// 收集参数
+			var id = $("#edit-id").val();
+
+			var owner = $("#edit-clueOwner").val();
+
+			var company = $("#edit-company").val();
+ 
+			var appellation = $("#edit-call").val();
+
+			var fullname = $("#edit-surname").val();
+
+			var job = $("#edit-job").val();
+
+			var email = $("#edit-email").val();
+
+			var phone = $("#edit-phone").val();
+
+			var website = $("#edit-website").val();
+
+			var mphone = $("#edit-mphone").val();
+ 
+			var state = $("#edit-status").val();
+
+			var source = $("#edit-source").val();
+
+			var description = $("#edit-describe").val();
+
+			var contactSummary = $("#edit-contactSummary").val();
+
+			var nextContactTime= $("#edit-nextContactTime").val();
+
+			var address = $("#edit-address").val();
+
+			// 表单验证
+			if (owner == ""){
+				alert("所有者不能为空");
+				return;
+			}
+			if (appellation == ""){
+				alert("称呼不能为空");
+				return;
+			}
+			if (state == ""){
+				alert("线索状态不能为空");
+				return;
+			}
+			if (source == ""){
+				alert("线索来源不能为空");
+				return;
+			}
+			if(company == ""){
+				alert("公司不能为空")
+				return;
+			}
+			if (fullname == ""){
+				alert("姓名不能为空")
+				return;
+			}
+			if (email != ""){
+				var ints1 = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+				if (!ints1.test(email)){
+					alert("email格式错误");
+					return;
+				}
+			}
+			if (phone == ""){
+				alert("座机不能为空")
+			}
+			if (mphone != ""){
+				var ints4 = /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/;
+				if (!ints4.test(mphone)){
+					alert("电话号码格式错误");
+					return;
+				}
+			}
+			if(description == ""){
+				alert("线索描述不能为空")
+				return;
+			}
+			if (address == ""){
+				alert("详细地址不能为空")
+				return;
+			}
+
+			//	发送异步请求
+			$.ajax({
+				url : 'workbench/clue/saveEditClueById.do',
+				data : {
+					id : id,
+					owner : owner,
+					company : company,
+					appellation : appellation,
+					fullname : fullname,
+					job : job,
+					email : email,
+					phone : phone,
+					website : website,
+					mphone : mphone,
+					state : state,
+					source : source,
+					description : description,
+					contactSummary : contactSummary,
+					nextContactTime : nextContactTime,
+					address : address
+				},
+				type : 'post',
+				dataType : 'json',
+				success : function (data) {
+					if(data.code == "1"){
+						// 保存成功，关闭模态窗口
+						$("#editClueModal").modal("hide");
+						queryClueByConditionForPage($("#demo_pag1").bs_pagination('getOption','currentPage'),$("#demo_pag1").bs_pagination('getOption','rowsPerPage'));
+						return;
+						//	刷新页面
+
+					}else {
+						alert(data.message);
+						//	模态窗口不关闭
+						$("#editClueModal").modal("show");
+					}
+				}
+			});
+			
+		});
+
 
 	});
 
@@ -221,7 +456,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				$.each(data.clueList,function (index, obj) {
 						htmlStr += "<tr class=\"active\">";
 						htmlStr += "<td><input type=\"checkbox\" value='"+obj.id+"'/></td>";
-						htmlStr += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='workbench/activity/detailActivity.do?id="+obj.id+"';\">"+obj.fullname+"</a></td>";
+						htmlStr += "<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='workbench/clue/detailClue.do?id="+obj.id+"';\">"+obj.fullname+obj.appellation+"</a></td>";
 						htmlStr += "<td>"+obj.company+"</td>";
 						htmlStr += "<td>"+obj.phone+"</td>";
 						htmlStr += "<td>"+obj.mphone+"</td>";
@@ -418,7 +653,8 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
-					
+
+						<input type="hidden" id="edit-id">
 						<div class="form-group">
 							<label for="edit-clueOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -431,7 +667,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							</div>
 							<label for="edit-company" class="col-sm-2 control-label">公司<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-company" value="动力节点">
+								<input type="text" class="form-control" id="edit-company" value="XXXX">
 							</div>
 						</div>
 						
@@ -447,18 +683,18 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							</div>
 							<label for="edit-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-surname" value="李四">
+								<input type="text" class="form-control" id="edit-surname" value="XX">
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-job" class="col-sm-2 control-label">职位</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-job" value="CTO">
+								<input type="text" class="form-control" id="edit-job" value="XX">
 							</div>
 							<label for="edit-email" class="col-sm-2 control-label">邮箱</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-email" value="lisi@bjpowernode.com">
+								<input type="text" class="form-control" id="edit-email" value="cpy20021234@163.com">
 							</div>
 						</div>
 						
@@ -469,7 +705,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							</div>
 							<label for="edit-website" class="col-sm-2 control-label">公司网站</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-website" value="http://www.bjpowernode.com">
+								<input type="text" class="form-control" id="edit-website" value="http://lscss.ltd">
 							</div>
 						</div>
 						
@@ -520,7 +756,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 							<div class="form-group">
 								<label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
 								<div class="col-sm-10" style="width: 300px;">
-									<input type="text" class="form-control myDate" id="edit-nextContactTime" value="2017-05-01" readonly>
+									<input type="text" class="form-control myDate" id="edit-nextContactTime" value="2022-05-01" readonly>
 								</div>
 							</div>
 						</div>
@@ -531,7 +767,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
                             <div class="form-group">
                                 <label for="edit-address" class="col-sm-2 control-label">详细地址</label>
                                 <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="1" id="edit-address">北京大兴区大族企业湾</textarea>
+                                    <textarea class="form-control" rows="1" id="edit-address"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -540,7 +776,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" id="edit-submit">更新</button>
 				</div>
 			</div>
 		</div>
@@ -639,8 +875,8 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 40px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" data-toggle="modal" id="createClue"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" id="deitClue"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" class="btn btn-default" data-toggle="modal" id="editClue"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-danger" id="deleteClueByIds"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 				
@@ -649,7 +885,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input type="checkbox" id="cheAll"/></td>
 							<td>名称</td>
 							<td>公司</td>
 							<td>公司座机</td>
@@ -662,7 +898,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 					<tbody id="tB">
 						<%--<tr>
 							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">李四先生</a></td>
+							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">李四先生</a></td>
 							<td>动力节点</td>
 							<td>010-84846003</td>
 							<td>12345678901</td>
@@ -672,7 +908,7 @@ String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.ge
 						</tr>
                         <tr class="active">
                             <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">李四先生</a></td>
+                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">李四先生</a></td>
                             <td>动力节点</td>
                             <td>010-84846003</td>
                             <td>12345678901</td>

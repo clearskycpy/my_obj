@@ -73,4 +73,22 @@ public interface ClueMapper {
      * @return
      */
     int selectCountOfClueByCondition(Map<String,Object> map);
+
+    /**
+     * 根据线索id删除线索
+     */
+
+    int deleteClueByIds(String[] ids);
+
+    /**
+     * 点击修改市场活动按钮之后后台查询所有字段，然后返回给前台
+     * @param id
+     * @return
+     */
+    Clue selectClueById(String id);
+
+    int updateClueById(Clue clue);
+
+    Clue selectClueForDetailById(String clueId);
+
 }

@@ -25,4 +25,17 @@ public interface ClueService {
      * 根据条件查询市场活动的总记录条数
      */
     int queryCountOfClueByCondition(Map<String,Object> map);
+
+    /**
+     * 根据线索id删除线索
+     * @param ids
+     * @return
+     */
+    int deleteClueByIds(String[] ids);
+
+    Clue queryClueById(String id);
+
+    int editClueById(Clue clue);
+
+    Clue queryClueForDetailById(String clueId);
 }

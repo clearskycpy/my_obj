@@ -640,4 +640,30 @@ public class Clue {
     public void setAddress(String address) {
         this.address = address == null ? null : address.trim();
     }
+
+    @Override
+    public String toString() {
+        return "Clue{" +
+                "id='" + id + '\'' +
+                ", fullname='" + fullname + '\'' +
+                ", appellation='" + appellation + '\'' +
+                ", owner='" + owner + '\'' +
+                ", company='" + company + '\'' +
+                ", job='" + job + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", website='" + website + '\'' +
+                ", mphone='" + mphone + '\'' +
+                ", state='" + state + '\'' +
+                ", source='" + source + '\'' +
+                ", createBy='" + createBy + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", editBy='" + editBy + '\'' +
+                ", editTime='" + editTime + '\'' +
+                ", description='" + description + '\'' +
+                ", contactSummary='" + contactSummary + '\'' +
+                ", nextContactTime='" + nextContactTime + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

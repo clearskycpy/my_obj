@@ -9,8 +9,11 @@ import com.cpy.settings.domain.User;
 import com.cpy.settings.service.DicValueService;
 import com.cpy.settings.service.UserService;
 import com.cpy.workbench.domain.Clue;
+import com.cpy.workbench.domain.ClueRemark;
+import com.cpy.workbench.service.ClueRemarkService;
 import com.cpy.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,6 +36,10 @@ public class ClueController {
 
     @Autowired
     private ClueService clueService;
+
+    @Autowired
+    private ClueRemarkService clueRemarkService;
+
     /**实现页面跳转, 同时将数据字典值传过去，以及所有的用户
      * @return
      */
@@ -115,6 +122,75 @@ public class ClueController {
         retMap.put("clueList",clueList);
         retMap.put("totalRows",totalRows);
         return retMap;
+    }
+
+    @RequestMapping("/workbench/clue/deleteClueByIds.do")
+    public @ResponseBody Object deleteClueByIds(String[] id){
+        ReturnObject returnObject = new ReturnObject();
+//        调用service层
+        try {
+            int success = clueService.deleteClueByIds(id);
+            if (success>0){
+                returnObject.setCode(Contants.RETURN_OBJECT_CODE_SUCCESS);
+                returnObject.setMessage("成功删除了"+success+"条数据");
+            }else {
+                returnObject.setCode(Contants.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setMessage("删除失败");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            returnObject.setCode(Contants.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("删除失败");
+        }
+        return returnObject;
+    }
+
+    @RequestMapping("/workbench/clue/queryClueById.do")
+    public @ResponseBody Object selectClueById(String id){
+        Clue clue = clueService.queryClueById(id);
+        return clue;
+    }
+
+    @RequestMapping("/workbench/clue/saveEditClueById.do")
+    public @ResponseBody Object saveEditClueById(Clue clue, HttpSession session){
+//        封装参数
+        User user = (User) session.getAttribute(Contants.SESSION_USER);
+        clue.setEditBy(user.getId());
+        clue.setEditTime(DateUtils.formatDateTime(new Date()));
+//        调用service层方法
+        ReturnObject returnObject = new ReturnObject();
+        try {
+            int success = clueService.editClueById(clue);
+            if (success > 0){
+                returnObject.setCode(Contants.RETURN_OBJECT_CODE_SUCCESS);
+            }else {
+                returnObject.setCode(Contants.RETURN_OBJECT_CODE_FAIL);
+                returnObject.setCode("系统繁忙。请稍后重试");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            returnObject.setCode(Contants.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setCode("系统繁忙。请稍后重试");
+        }
+        return returnObject;
+    }
+
+    /**
+     * 点击线索名称的链接，实现页面转跳
+     * @return
+     */
+    @RequestMapping("/workbench/clue/detailClue.do")
+    public String detailClue(String id, HttpServletRequest request){
+//        查询线索的详细信息，还有线索的备注
+        Clue clue = clueService.queryClueForDetailById(id);
+        System.out.println("===================================="+clue.toString());
+        List<ClueRemark> clueRemarkList = clueRemarkService.queryClueRemarkForDetailByClueId(id);
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++"+clueRemarkList.size());
+//        保存线索的备注和线索的信息
+        request.setAttribute("clue",clue);
+        request.setAttribute("clueRemarkList",clueRemarkList);
+
+        return "/workbench/clue/detail";
     }
 
 }
