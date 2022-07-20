@@ -79,5 +79,25 @@ public class ActivityServiceImpl implements ActivityService {
         return activityMapper.selectActivityForDetailById(id);
     }
 
+    @Override
+    public List<Activity> queryActivityForDetailByClueId(String clueId) {
+        return activityMapper.selectActivityForDetailByClueId(clueId);
+    }
+
+    @Override
+    public List<Activity> queryActivityForDetailByNameAndClueId(Map<String, String> map) {
+        return activityMapper.selectActivityForDetailLikeName(map);
+    }
+
+    @Override
+    public List<Activity> queryActivityForDetailByIds(String[] ids) {
+        return activityMapper.selectActivityForDetailByIds(ids);
+    }
+
+    @Override
+    public List<Activity> queryActivityByNameAndClueIdExcuse(Map<String, String> map) {
+        return activityMapper.selectActivityByNameAndClueIdExcuse(map);
+    }
+
 
 }

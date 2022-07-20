@@ -8,8 +8,10 @@ import com.cpy.settings.domain.DicValue;
 import com.cpy.settings.domain.User;
 import com.cpy.settings.service.DicValueService;
 import com.cpy.settings.service.UserService;
+import com.cpy.workbench.domain.Activity;
 import com.cpy.workbench.domain.Clue;
 import com.cpy.workbench.domain.ClueRemark;
+import com.cpy.workbench.service.ActivityService;
 import com.cpy.workbench.service.ClueRemarkService;
 import com.cpy.workbench.service.ClueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,9 @@ public class ClueController {
 
     @Autowired
     private ClueRemarkService clueRemarkService;
+
+    @Autowired
+    private ActivityService activityService;
 
     /**实现页面跳转, 同时将数据字典值传过去，以及所有的用户
      * @return
@@ -183,14 +188,80 @@ public class ClueController {
     public String detailClue(String id, HttpServletRequest request){
 //        查询线索的详细信息，还有线索的备注
         Clue clue = clueService.queryClueForDetailById(id);
-        System.out.println("===================================="+clue.toString());
+//        System.out.println("===================================="+clue.toString());
         List<ClueRemark> clueRemarkList = clueRemarkService.queryClueRemarkForDetailByClueId(id);
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++"+clueRemarkList.size());
+//        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++"+clueRemarkList.size());
 //        保存线索的备注和线索的信息
+        List<Activity> activityList = activityService.queryActivityForDetailByClueId(id);
         request.setAttribute("clue",clue);
         request.setAttribute("clueRemarkList",clueRemarkList);
-
+        request.setAttribute("activityList",activityList);
         return "/workbench/clue/detail";
     }
+
+
+    @RequestMapping("/workbench/clue/queryActivityByNameAndClueId.do")
+    public @ResponseBody Object queryActivityByNameAndClueId(String activityName,String id){
+        Map<String, String> map = new HashMap<>();
+//        封装参数
+        map.put("activityName",activityName);
+        map.put("clueId",id);
+        List<Activity> activityList = activityService.queryActivityForDetailByNameAndClueId(map);
+        return activityList;
+    }
+
+    /**
+     * 转跳到线索转换页面
+     * @param clueId
+     * @return
+     */
+    @RequestMapping("/workbench/clue/toConvert.do")
+    public String toConvert(String clueId,HttpServletRequest request){
+        Clue clue = clueService.queryClueForDetailById(clueId);
+        List<DicValue> stageList = dicValueService.queryDicValueByTypeCode("stage");
+        request.setAttribute("clue",clue);
+        request.setAttribute("stageList",stageList);
+        return "workbench/clue/convert";
+    }
+
+    @RequestMapping("/workbench/clue/queryActivityByNameAndClueIdExcuse.do")
+    public @ResponseBody Object queryActivityByNameAndClueIdExcuse(String activityName,String id){
+        Map<String, String> map = new HashMap<>();
+//        封装参数
+        map.put("activityName",activityName);
+        map.put("clueId",id);
+        List<Activity> activityList = activityService.queryActivityByNameAndClueIdExcuse(map);
+        return activityList;
+    }
+
+    @RequestMapping("/workbench/clue/convertClue.do")
+    public @ResponseBody Object convertClue(String clueId, String money, String expectedDate,
+                                            String stage, String activityId, String isCreateTran,HttpSession session){
+        Map<String, Object> map = new HashMap<>();
+        map.put("clueId",clueId);
+        map.put("money",money);
+        map.put("expectedDate",expectedDate);
+        map.put("stage",stage);
+        map.put("activityId",activityId);
+        map.put("isCreateTran",isCreateTran);
+        User user = (User) session.getAttribute(Contants.SESSION_USER);
+        map.put(Contants.SESSION_USER,user);
+
+        ReturnObject returnObject = new ReturnObject();
+        try {
+            clueService.saveClueConvert(map);
+            returnObject.setCode(Contants.RETURN_OBJECT_CODE_SUCCESS);
+        }catch (Exception e){
+            e.printStackTrace();
+            returnObject.setCode(Contants.RETURN_OBJECT_CODE_FAIL);
+            returnObject.setMessage("系统忙,请稍后重试");
+
+        }
+        return returnObject;
+
+
+
+    }
+
 
 }

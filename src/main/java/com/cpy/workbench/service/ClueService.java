@@ -38,4 +38,10 @@ public interface ClueService {
     int editClueById(Clue clue);
 
     Clue queryClueForDetailById(String clueId);
+
+    /**
+     * 实现线索转换
+     * @param map
+     */
+    void saveClueConvert(Map<String,Object> map);
 }

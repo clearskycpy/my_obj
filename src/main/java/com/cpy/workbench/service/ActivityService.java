@@ -73,4 +73,13 @@ public interface ActivityService {
      */
     Activity queryActivityForDetailById(String id);
 
+    List<Activity> queryActivityForDetailByClueId(String clueId);
+
+    List<Activity> queryActivityForDetailByNameAndClueId(Map<String,String> map);
+
+    List<Activity> queryActivityForDetailByIds(String[] ids);
+
+    List<Activity> queryActivityByNameAndClueIdExcuse(Map<String,String> map);
+
+
 }
